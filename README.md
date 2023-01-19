@@ -1,1 +1,3 @@
-# Baccarat-cpp
+# Baccacart-cpp
+
+A inceput proiectul nostru
