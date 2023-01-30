@@ -4,12 +4,13 @@
 
 using namespace std;
 
+int v[52]={0};
+int x,tip,val,cr;
+char ctip[4][15]={"Inima rosie","Inima Neagra","Trefla","Romb"};
+char cval[15][15]={" ","Unu","Doi","Trei","Patru","Cinci","Sase","Sapte","Opt","Noua","Zece"," ","Juvete","Dama","Rege"};
+
 void generare_carti()
 {
-    int v[52]={0};
-    int x,tip,val,cr;
-    char ctip[4][15]={"Inima rosie","Inima Neagra","Trefla","Romb"};
-    char cval[15][15]={" ","Unu","Doi","Trei","Patru","Cinci","Sase","Sapte","Opt","Noua","Zece"," ","Juvete","Dama","Rege"};
     cr=52;
     while(cr>0){
         x=rand()%52;
@@ -21,13 +22,12 @@ void generare_carti()
             if(val>10){
                 val++;
             }
-            cout<<cval[val]<<" de "<<ctip[tip]<<'\n';
         }
     }
 }
 
 int main()
 {
-    cout << "Hello world!" << endl;
+
     return 0;
 }
