@@ -4,7 +4,7 @@
 
 using namespace std;
 
-int main()
+void generare_carti()
 {
     int v[52]={0};
     int x,tip,val,cr;
@@ -24,7 +24,6 @@ int main()
             cout<<cval[val]<<" de "<<ctip[tip]<<'\n';
         }
     }
-    return 0;
 }
 
 int main()
