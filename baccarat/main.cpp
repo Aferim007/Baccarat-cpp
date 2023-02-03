@@ -2,15 +2,15 @@
 #include <time.h>
 #include <stdlib.h>
 #include <time.h>
-
+ 
 using namespace std;
-
+ 
 int v[52] = {0};
 int z, tip, val, cr, x, y, a, b, f, g, s, k, j1_val, j2_val, bal = 1000, par;
 string nume;
 char ctip[4][14] = {"Inima rosie","Inima Neagra","Trefla","Romb"};
 char cval[14][14] = {" ","Unu","Doi","Trei","Patru","Cinci","Sase","Sapte","Opt","Noua","Zece","Juvete","Dama","Rege"};
-
+ 
 void generare_carti()
 {
     cr = 52;
@@ -24,7 +24,7 @@ void generare_carti()
         }
     }
 }
-
+ 
 void joc(){
     k = 0;
     cout << "                                                                              Balanta: " << bal << " de lei" << endl;
@@ -54,7 +54,7 @@ void joc(){
     }
     int j1_val = s;
     cout << "Valoare cartilor tale: " << j1_val << endl << endl;
-
+ 
     cout << "Bancher:" << '\n';
     x = 1 + rand() % 13;
     y = rand() % 4;
@@ -75,7 +75,7 @@ void joc(){
     }
     int j2_val = s;
     cout << "Valoare cartilor bancherului: " << j2_val << endl << endl;
-
+ 
     if (j1_val == j2_val){
         joc();
     }
@@ -100,7 +100,7 @@ void joc(){
         bal = bal - par;
     }
 }
-
+ 
 int main()
 {
     srand(time(NULL));
@@ -117,6 +117,6 @@ int main()
         cout << "Vrei sa mai joci o runda? (d/n): ";
         cin >> again;
     }while (again == 'd');
-
+ 
     return 0;
 }
