@@ -2,29 +2,71 @@
 #include <time.h>
 #include <stdlib.h>
 #include <time.h>
- 
+#include <fstream>
+#include <cstring>
+
 using namespace std;
- 
+
+ifstream fin ("carti.txt");
+
 int v[52] = {0};
 int z, tip, val, cr, x, y, a, b, f, g, s, k, j1_val, j2_val, bal = 1000, par;
 string nume;
 char ctip[4][14] = {"Inima rosie","Inima Neagra","Trefla","Romb"};
 char cval[14][14] = {" ","Unu","Doi","Trei","Patru","Cinci","Sase","Sapte","Opt","Noua","Zece","Juvete","Dama","Rege"};
- 
-void generare_carti()
+
+
+struct carte {
+    int val, tip;
+    char imagine[32];
+    carte *leg;
+}*carti;
+
+void adimagine (carte *p){
+    carte *q;
+    int valf, tipf;
+    char numeimg[30];
+    while (fin >> valf >> tipf){
+        fin >> numeimg;
+        q = p;
+        while (q){
+            if (q->val != valf && q->tip != tipf)
+                q = q->leg;
+        }
+        if (q){
+            strcpy(q->imagine, numeimg);
+        }
+    }
+}
+carte* generare_carti()
 {
-    cr = 52;
+    int cr = 52, v[52] = {0};
+    carte *p = NULL, *q;
     while (cr > 0){
         z = rand() % 52;
         if(v[z] == 0){
             v[z] = 1;
             cr--;
-            tip = z / 13;
+            tip = z / 13 + 1;
             val = z % 13 + 1;
+            q = new carte;
+            q->val = val;
+            q->tip = tip;
+            q->leg = p;
+            p = q;
+            cout << q->val << ' '<< q->tip << '\n';
+
         }
     }
+    return p;
 }
- 
+
+void afisare (carte *p){
+    while (p){
+        cout << p->val << " " << p->tip << " " << p->imagine << '\n';
+        p = p->leg;
+    }
+}
 void joc(){
     k = 0;
     cout << "                                                                              Balanta: " << bal << " de lei" << endl;
@@ -54,7 +96,6 @@ void joc(){
     }
     int j1_val = s;
     cout << "Valoare cartilor tale: " << j1_val << endl << endl;
- 
     cout << "Bancher:" << '\n';
     x = 1 + rand() % 13;
     y = rand() % 4;
@@ -75,7 +116,6 @@ void joc(){
     }
     int j2_val = s;
     cout << "Valoare cartilor bancherului: " << j2_val << endl << endl;
- 
     if (j1_val == j2_val){
         joc();
     }
@@ -100,15 +140,17 @@ void joc(){
         bal = bal - par;
     }
 }
- 
 int main()
 {
     srand(time(NULL));
-    generare_carti();
+    carti = generare_carti();
+    adimagine(carti);
+    cout << '\n' << "ADIMAGINE" << '\n';
+    afisare(carti);
     cout << "Alege-ti numele: ";
     cin >> nume;
     char again;
-    do{
+    /*do{
         joc();
         if (bal < 0){
             cout << "Ai pierdut toti banii la pariuri..";
@@ -117,6 +159,6 @@ int main()
         cout << "Vrei sa mai joci o runda? (d/n): ";
         cin >> again;
     }while (again == 'd');
- 
+    */
     return 0;
 }

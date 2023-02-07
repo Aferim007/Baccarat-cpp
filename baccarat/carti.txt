@@ -1,0 +1,68 @@
+1 1 Imagini/ace_of_hearts.jpg
+1 2 Imagini/ace_of_spades.jpg
+1 3 Imagini/ace_of_diamonds.jpg
+1 4 Imagini/ace_of_clubs.jpg
+2 1 Imagini/2_of_hearts.jpg
+2 2 Imagini/2_of_spades.jpg
+2 3 Imagini/2_of_diamonds.jpg
+2 4 Imagini/2_of_clubs.jpg
+3 1 Imagini/3_of_hearts.jpg
+3 2 Imagini/3_of_spades.jpg
+3 3 Imagini/3_of_diamonds.jpg
+3 4 Imagini/3_of_clubs.jpg
+4 1 Imagini/4_of_hearts.jpg
+4 2 Imagini/4_of_spades.jpg
+4 3 Imagini/4_of_diamonds.jpg
+4 4 Imagini/4_of_clubs.jpg
+5 1 Imagini/5_of_hearts.jpg
+5 2 Imagini/5_of_spades.jpg
+5 3 Imagini/5_of_diamonds.jpg
+5 4 Imagini/5_of_clubs.jpg
+6 1 Imagini/6_of_hearts.jpg
+6 2 Imagini/6_of_spades.jpg
+6 3 Imagini/6_of_diamonds.jpg
+6 4 Imagini/6_of_clubs.jpg
+7 1 Imagini/7_of_hearts.jpg
+7 2 Imagini/7_of_spades.jpg
+7 3 Imagini/7_of_diamonds.jpg
+7 4 Imagini/7_of_clubs.jpg
+8 1 Imagini/8_of_hearts.jpg
+8 2 Imagini/8_of_spades.jpg
+8 3 Imagini/8_of_diamonds.jpg
+8 4 Imagini/8_of_clubs.jpg
+9 1 Imagini/9_of_hearts.jpg
+9 2 Imagini/9_of_spades.jpg
+9 3 Imagini/9_of_diamonds.jpg
+8 4 Imagini/9_of_clubs.jpg
+10 1 Imagini/10_of_hearts.jpg
+10 2 Imagini/10_of_spades.jpg
+10 3 Imagini/10_of_diamonds.jpg
+10 4 Imagini/10_of_clubs.jpg
+12 1 Imagini/jack_of_hearts.jpg
+12 2 Imagini/jack_of_spades.jpg
+12 3 Imagini/jack_of_diamonds.jpg
+12 4 Imagini/jack_of_clubs.jpg
+13 1 Imagini/queen_of_hearts.jpg
+13 2 Imagini/queen_of_spades.jpg
+13 3 Imagini/queen_of_diamonds.jpg
+13 4 Imagini/queen_of_clubs.jpg
+14 1 Imagini/king_of_hearts.jpg
+14 2 Imagini/king_of_spades.jpg
+14 3 Imagini/king_of_diamonds.jpg
+14 4 Imagini/king_of_clubs.jpg
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
