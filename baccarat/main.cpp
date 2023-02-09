@@ -1,26 +1,44 @@
+#include <graphics.h>
 #include <iostream>
-#include <time.h>
 #include <stdlib.h>
-#include <time.h>
 #include <fstream>
 #include <cstring>
+#include <time.h>
 
 using namespace std;
 
 ifstream fin ("carti.txt");
 
-int v[52] = {0};
-int z, tip, val, cr, x, y, a, b, f, g, s, k, j1_val, j2_val, bal = 1000, par;
-string nume;
-char ctip[4][14] = {"Inima rosie","Inima Neagra","Trefla","Romb"};
-char cval[14][14] = {" ","Unu","Doi","Trei","Patru","Cinci","Sase","Sapte","Opt","Noua","Zece","Juvete","Dama","Rege"};
-
+int bal = 1000, par, pierdut = 0, r, par_s = 0;
 
 struct carte {
     int val, tip;
-    char imagine[32];
+    char img[30];
     carte *leg;
 }*carti;
+
+carte* generare_carti()
+{
+    int cr = 52, v[52] = {0}, tip, val, x;
+    carte *p = NULL, *q;
+    while (cr > 0){
+        x = rand() % 52;
+        if(v[x] == 0){
+            v[x] = 1;
+            cr--;
+            tip = x / 13;
+            val = x % 13 + 1;
+            if(val > 10)
+                val++;
+            q = new carte;
+            q -> val = val;
+            q -> tip = tip;
+            q -> leg = p;
+            p = q;
+        }
+    }
+    return p;
+}
 
 void adimagine (carte *p){
     carte *q;
@@ -29,136 +47,259 @@ void adimagine (carte *p){
     while (fin >> valf >> tipf){
         fin >> numeimg;
         q = p;
-        while (q){
-            if (q->val != valf && q->tip != tipf)
-                q = q->leg;
-        }
-        if (q){
-            strcpy(q->imagine, numeimg);
+        for (int i = 1; i <= 52; i++){
+            if(q -> val == valf && q -> tip == tipf)
+                strcpy(q -> img, numeimg);
+            else q = q -> leg;
         }
     }
-}
-carte* generare_carti()
-{
-    int cr = 52, v[52] = {0};
-    carte *p = NULL, *q;
-    while (cr > 0){
-        z = rand() % 52;
-        if(v[z] == 0){
-            v[z] = 1;
-            cr--;
-            tip = z / 13 + 1;
-            val = z % 13 + 1;
-            q = new carte;
-            q->val = val;
-            q->tip = tip;
-            q->leg = p;
-            p = q;
-            cout << q->val << ' '<< q->tip << '\n';
-
-        }
-    }
-    return p;
 }
 
-void afisare (carte *p){
-    while (p){
-        cout << p->val << " " << p->tip << " " << p->imagine << '\n';
-        p = p->leg;
+stats (int j){
+    cleardevice();
+    char stats [100];
+    settextstyle (10, 0, 4);
+    outtextxy (350, 20, "Statistici");
+    settextstyle (9, 0, 2);
+    sprintf (stats, "Ai jucat %d runde de Baccarat", j);
+    outtextxy (50, 100, stats);
+    sprintf (stats, "Runde castigate: %d", r);
+    outtextxy (50, 130, stats);
+    sprintf (stats, "Runde pierdute: %d", j - r);
+    outtextxy (50, 160, stats);
+    sprintf (stats, "Balanta finala: %d de lei", bal);
+    outtextxy (50, 190, stats);
+    sprintf (stats, "Total castig: %d de lei", pierdut + bal - 1000);
+    outtextxy (50, 220, stats);
+    sprintf (stats, "Total pierdere: %d de lei", pierdut);
+    outtextxy (50, 250, stats);
+    sprintf (stats, "Total suma pariata: %d de lei", par_s);
+    outtextxy (50, 280, stats);
+    settextstyle (1, 0, 3);
+    delay (3000);
+    outtextxy (50, 600, "Apasa tasta ESCAPE pentru a iesi din joc");
+    while (1){
+        if (GetAsyncKeyState(VK_ESCAPE))
+            return 0;
     }
 }
-void joc(){
-    k = 0;
-    cout << "                                                                              Balanta: " << bal << " de lei" << endl;
-    cout << "Cat doriti sa pariati?" << endl;
-    cin >> par;
-    while(par > bal){
-        cout << "NU poti sa pariezi mai multi bani decat ai, incearca sa pariezi mai putin." << endl;
-        cin >> par;
+
+void joc (){
+    int maxx = getmaxwidth();
+    int maxy = getmaxheight();
+    carte *victim;
+    POINT poz;
+    int k = 0, s1 = 0 , s2 = 0, dif1, dif2, x, y;
+    char pariu [10], bani [1000000];
+    closegraph();
+    initwindow (maxx, maxy, "Baccarat");
+    setbkcolor(2);
+    cleardevice();
+    settextstyle(5, 0, 2);
+    outtextxy(700, 195, "Regulile jocului Baccarat:");
+    outtextxy(650, 220, "-fiecare jucator primeste cate 2 carti");
+    outtextxy(650, 240, "-Juvetele, Regina si Regele valoreaza 10 puncte, iar restul cartilor au valoarea implicita");
+    outtextxy(650, 260, "-daca suma cartilor unui jucator depaseste 9 ea scade cu 10 puncte");
+    outtextxy(650, 280, "de exemplu daca un jucator are suma cartilor egala cu 15, valoarea reala a cartilor va fi 5");
+    outtextxy(650, 300, "-daca un jucator va avea suma cartilor egala cu 10 sau cu 20");
+    outtextxy(650, 320, "valoarea reala va fi de 0 puncte, cu alte cuvinte BACCARAT");
+    outtextxy(650, 340, "-castiga cel care are valoarea cartilor cea mai apropiata de 9");
+    outtextxy(700, 370, "Incasari:");
+    outtextxy(650, 390, "-pentru valoarea cartilor egala cu 9 se incaseaza trilplul pariului");
+    outtextxy(650, 410, "-pentru orice al castig se incaseaza dublu");
+    settextstyle(6, 0, 2);
+    sprintf (bani, "Balanta: %d de lei", bal);
+    outtextxy (190, 600, bani);
+    settextstyle(9, 0, 2);
+    outtextxy(10, 10, "Apasa pe ROTITA ca sa alegi suma pe care vrei sa o pariezi");
+    setfillstyle(1, 8);
+    circle(100, 170, 80);
+    floodfill(100, 170, WHITE);
+    setfillstyle(1, 6);
+    circle(300, 170, 80);
+    floodfill(300, 170, WHITE);
+    setfillstyle(1, 5);
+    circle(500, 170, 80);
+    floodfill(500, 170, WHITE);
+    setfillstyle(1, 1);
+    circle(200, 320, 80);
+    floodfill(200, 320, WHITE);
+    setfillstyle(1, 3);
+    circle(400, 320, 80);
+    floodfill(400, 320, WHITE);
+    setfillstyle(1, 4);
+    circle(300, 470, 80);
+    floodfill(300, 470, WHITE);
+    settextstyle(9, 0, 6);
+    setfillstyle(1, 8);
+    outtextxy(80, 145, "1");
+    floodfill(80, 145, WHITE);
+    setfillstyle(1, 6);
+    outtextxy(260, 145, "25");
+    floodfill(260, 145, WHITE);
+    setfillstyle(1, 5);
+    outtextxy(460, 145, "50");
+    floodfill(460, 145, WHITE);
+    setfillstyle(1, 1);
+    outtextxy(135, 290, "100");
+    floodfill(135, 290, WHITE);
+    setfillstyle(1, 3);
+    outtextxy(340, 290, "250");
+    floodfill(340, 290, WHITE);
+    setfillstyle(1, 4);
+    outtextxy(235, 445, "500");
+    floodfill(235, 445, WHITE);
+    par = 0;
+    while (par == 0 || par > bal){
+    GetCursorPos (&poz);
+    if (GetAsyncKeyState(VK_MBUTTON))
+        x = poz.x;
+        y = poz.y;
+    if ((x <= 170 && x >= 40) && (y <= 230 && y >= 110)){
+        par = 1;
     }
-    cout << nume << ":" << endl;
-    x = 1 + rand() % 13;
-    y = rand() % 4;
-    cout <<  "-" << cval[x] << " de " << ctip[y] << '\n';
-    a = 1 + rand() % 13;
-    b = rand() % 4;
-    cout <<  "-" << cval[a] << " de " << ctip[b] << '\n';
-    if (x > 10)
-        x = 10;
-    if (a > 10)
-        a = 10;
-    s = x + a;
-    if (s > 9){
-        s = s - 10;
+    if ((x <= 360 && x >= 240) && (y <= 230 && y >=110)){
+        par = 25;
     }
-     if (s == 20){
-        s = 0;
+    if ((x <= 560 && x >= 440) && (y <= 230 && y >= 110)){
+        par = 50;
     }
-    int j1_val = s;
-    cout << "Valoare cartilor tale: " << j1_val << endl << endl;
-    cout << "Bancher:" << '\n';
-    x = 1 + rand() % 13;
-    y = rand() % 4;
-    cout << "-" << cval[x] << " de " << ctip[y] << '\n';
-    a = 1 + rand() % 13;
-    b = rand() % 4;
-    cout <<  "-" << cval[a] << " de " << ctip[b] << '\n';
-    if (x > 10)
-        x = 10;
-    if (a > 10)
-        a = 10;
-    s = x + a;
-    if (s > 9){
-        s = s - 10;
+    if ((x <= 260 && x >= 140) && (y <= 380 && y >= 260)){
+        par = 100;
     }
-    if (s == 20){
-        s = 0;
+    if ((x <= 460 && x >= 340) && (y <= 380 && y >= 260)){
+        par = 250;
     }
-    int j2_val = s;
-    cout << "Valoare cartilor bancherului: " << j2_val << endl << endl;
-    if (j1_val == j2_val){
+    if ((x <= 360 && x >= 240) && (y <= 530 && y >= 410)){
+        par = 500;
+    }
+}
+    par_s = par_s + par;
+    cleardevice();
+    settextstyle (8,0,2);
+    sprintf (bani, "Balanta: %d de lei", bal);
+    outtextxy (430, 0, bani);
+    settextstyle (7,0,1);
+    outtext ("Cartile tale:");
+    readimagefile (carti -> img, 3, 20, 105, 157);
+    if(carti -> val > 10)
+        carti -> val = 10;
+    s1 = s1 + carti -> val;
+    victim = carti;
+    carti = carti -> leg;
+    delete victim;
+    readimagefile (carti -> img, 150, 20, 45, 157);
+    if(carti -> val > 10)
+        carti -> val = 10;
+    s1 = s1 + carti -> val;
+    victim = carti;
+    carti = carti -> leg;
+    delete victim;
+    outtextxy (0, 190, "Cartile adversarului:");
+    readimagefile (carti -> img, 3, 210, 105, 65);
+    if(carti -> val > 10)
+        carti -> val = 10;
+    s2 = s2 + carti -> val;
+    victim = carti;
+    carti = carti -> leg;
+    delete victim;
+    readimagefile (carti -> img, 150, 210, 45, 65);
+    if(carti -> val > 10)
+        carti -> val = 10;
+    s2 = s2 + carti -> val;
+    victim = carti;
+    carti = carti -> leg;
+    delete victim;
+    if (s1 == 20){
+        s1 = 0;
+    }
+    if (s2 == 20){
+        s2 = 0;
+    }
+    if (s1 > 9){
+        s1 = s1 - 10;
+    }
+    if (s2 > 9){
+        s2 = s2 - 10;
+    }
+    if (s1 == s2){
         joc();
     }
-    else if (j1_val == 9){
-        cout << "AI CASTIGAT! :)" << " Primesti " << par * 3 << " de lei" << endl;
+    settextstyle(9, 0, 1);
+    if (s1 == 9){
+        sprintf (pariu, "AI CASTIGAT! :) Primesti  %d de lei", par * 3);
+        outtextxy (3, 400, pariu);
         bal = bal + par * 3;
         k++;
+        r++;
+        outtextxy(3, 430, "Apasa tasta SHIFT pentru a juca din nou sau tasta ESCAPE pentru a iesi din joc");
     }
-    else if (j2_val == 9 ){
-        cout << "AI PIERDUT! :(" << " Pierzi " << par << " de lei" << endl;
+    else if (s2 == 9 ){
+        sprintf (pariu, "Ai pierdut :( Pierzi %d de lei", par);
+        outtextxy (3, 400, pariu);
         bal = bal - par;
+        pierdut = pierdut + par;
         k++;
+        outtextxy(3, 430, "Apasa tasta SHIFT pentru a juca din nou sau tasta ESCAPE pentru a iesi din joc");
     }
-    f = 9 - j1_val;
-    g = 9 - j2_val;
-    if (f < g && k == 0) {
-        cout << "AI CASTIGAT! :)" << " Primesti " << par * 2 << " de lei" << endl;
+    dif1 = 9 - s1;
+    dif2 = 9 - s2;
+    if (dif1 < dif2 && k == 0) {
+        sprintf (pariu, "AI CASTIGAT! :) Primesti  %d de lei", par * 2);
+        outtextxy (3, 400, pariu);
         bal = bal + par * 2;
+        outtextxy(3, 430, "Apasa tasta SHIFT pentru a juca din nou sau tasta ESCAPE pentru a iesi din joc");
+        r++;
     }
-    else if (f > g && k == 0){
-        cout << "AI PIERDUT! :(" << " Pierzi " << par << " de lei" << endl;
+    else if (dif1 > dif2 && k == 0){
+        sprintf (pariu, "Ai pierdut :( Pierzi %d de lei", par);
+        outtextxy (3, 400, pariu);
         bal = bal - par;
+        pierdut = pierdut + par;
+        outtextxy(3, 430, "Apasa tasta SHIFT pentru a juca din nou sau tasta ESCAPE pentru a iesi din joc");
     }
 }
+
 int main()
 {
+    int j = 0;
     srand(time(NULL));
     carti = generare_carti();
     adimagine(carti);
-    cout << '\n' << "ADIMAGINE" << '\n';
-    afisare(carti);
-    cout << "Alege-ti numele: ";
-    cin >> nume;
-    char again;
-    /*do{
+    while (carti){
         joc();
-        if (bal < 0){
-            cout << "Ai pierdut toti banii la pariuri..";
-                return 0;
+        j++;
+        if (bal == 0){
+            settextstyle(4, 0, 2);
+            outtextxy (3, 430, "Ai pierdut toti banii la pariuri.........................................................");
+            settextstyle(9, 0, 2);
+            outtextxy (3, 460, "Apasa tasta SHIFT pentru a vedea statisticile jocului sau tasta ESCAPE pentru a iesi din joc");
+            while (1){
+        if (GetAsyncKeyState(VK_LSHIFT))
+            stats(j);
+        if (GetAsyncKeyState(VK_ESCAPE))
+            return 0;
         }
-        cout << "Vrei sa mai joci o runda? (d/n): ";
-        cin >> again;
-    }while (again == 'd');
-    */
+    }
+        if (carti){
+        while (1){
+        if (GetAsyncKeyState(VK_ESCAPE))
+            return 0;
+        if (GetAsyncKeyState(VK_LSHIFT))
+            break;
+        }
+    }
+}
+    settextstyle(4, 0, 2);
+    outtextxy(3, 430, "S-a terminat pachetul de carti.........................................................");
+    settextstyle(9, 0, 2);
+    outtextxy (3, 460, "Apasa tasta SHIFT pentru a vedea statisticile jocului sau tasta ESCAPE pentru a iesi din joc");
+    while (1){
+        if (GetAsyncKeyState(VK_LSHIFT))
+            stats(j);
+        if (GetAsyncKeyState(VK_ESCAPE))
+            return 0;
+        }
     return 0;
+    getch();
 }
