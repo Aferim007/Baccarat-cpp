@@ -90,12 +90,15 @@ void joc (){
     carte *victim;
     POINT poz;
     int k = 0, s1 = 0 , s2 = 0, dif1, dif2, x, y;
-    char pariu [10], bani [1000000];
+    char pariu [10], bani [100];
     closegraph();
     initwindow (maxx, maxy, "Baccarat");
     setbkcolor(2);
     cleardevice();
     settextstyle(5, 0, 2);
+    outtextxy(700,600,"Autori: Turcu Alexandru Costin");
+    outtextxy(770,630,"Soisun Mina David");
+    outtextxy(770,660,"Tirila Briana Maria");
     outtextxy(700, 195, "Regulile jocului Baccarat:");
     outtextxy(650, 220, "-fiecare jucator primeste cate 2 carti");
     outtextxy(650, 240, "-Juvetele, Regina si Regele valoreaza 10 puncte, iar restul cartilor au valoarea implicita");
