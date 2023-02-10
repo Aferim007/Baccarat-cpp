@@ -9,7 +9,7 @@ using namespace std;
 
 ifstream fin ("carti.txt");
 
-int bal = 1000, par, pierdut = 0, r, par_s = 0;
+int bal = 1000, par, pierdut = 0, r, par_s = 0, j = 0, egal = 0;
 
 struct carte {
     int val, tip;
@@ -55,7 +55,7 @@ void adimagine (carte *p){
     }
 }
 
-stats (int j){
+stats (){
     cleardevice();
     char stats [100];
     settextstyle (10, 0, 4);
@@ -65,7 +65,7 @@ stats (int j){
     outtextxy (50, 100, stats);
     sprintf (stats, "Runde castigate: %d", r);
     outtextxy (50, 130, stats);
-    sprintf (stats, "Runde pierdute: %d", j - r);
+    sprintf (stats, "Runde pierdute: %d", j - r - egal);
     outtextxy (50, 160, stats);
     sprintf (stats, "Balanta finala: %d de lei", bal);
     outtextxy (50, 190, stats);
@@ -75,11 +75,13 @@ stats (int j){
     outtextxy (50, 250, stats);
     sprintf (stats, "Total suma pariata: %d de lei", par_s);
     outtextxy (50, 280, stats);
+    sprintf (stats, "Runde care s-au terminat la egalitate: %d", egal);
+    outtextxy (50, 310, stats);
     settextstyle (1, 0, 3);
-    delay (3000);
+    delay (2500);
     outtextxy (50, 600, "Apasa tasta ESCAPE pentru a iesi din joc");
     while (1){
-        if (GetAsyncKeyState(VK_ESCAPE))
+        if (GetKeyState(VK_ESCAPE) & 0x8000)
             return 0;
     }
 }
@@ -89,16 +91,16 @@ void joc (){
     int maxy = getmaxheight();
     carte *victim;
     POINT poz;
-    int k = 0, s1 = 0 , s2 = 0, dif1, dif2, x, y;
-    char pariu [10], bani [100];
+    int k = 0, s1 = 0 , s2 = 0, dif1, dif2, x, y, e = 0;
+    char pariu [10], bani [1000000];
     closegraph();
     initwindow (maxx, maxy, "Baccarat");
     setbkcolor(2);
     cleardevice();
     settextstyle(5, 0, 2);
-    outtextxy(700,600,"Autori: Turcu Alexandru Costin");
-    outtextxy(770,630,"Soisun Mina David");
-    outtextxy(770,660,"Tirila Briana Maria");
+    outtextxy(700,600,"Autori: Turcu Alexandru-Costin");
+    outtextxy(770,630,"Soisun Mina-David");
+    outtextxy(770,660,"Tirila Briana-Maria");
     outtextxy(700, 195, "Regulile jocului Baccarat:");
     outtextxy(650, 220, "-fiecare jucator primeste cate 2 carti");
     outtextxy(650, 240, "-Juvetele, Regina si Regele valoreaza 10 puncte, iar restul cartilor au valoarea implicita");
@@ -114,7 +116,7 @@ void joc (){
     sprintf (bani, "Balanta: %d de lei", bal);
     outtextxy (190, 600, bani);
     settextstyle(9, 0, 2);
-    outtextxy(10, 10, "Apasa pe ROTITA ca sa alegi suma pe care vrei sa o pariezi");
+    outtextxy(10, 10, "Apasa CLICK in mijlocul jetonului ca sa alegi suma pe care vrei sa o pariezi");
     setfillstyle(1, 8);
     circle(100, 170, 80);
     floodfill(100, 170, WHITE);
@@ -154,8 +156,8 @@ void joc (){
     floodfill(235, 445, WHITE);
     par = 0;
     while (par == 0 || par > bal){
-    GetCursorPos (&poz);
-    if (GetAsyncKeyState(VK_MBUTTON))
+    if (GetKeyState(VK_LBUTTON) & 0x8000)
+        GetCursorPos (&poz);
         x = poz.x;
         y = poz.y;
     if ((x <= 170 && x >= 40) && (y <= 230 && y >= 110)){
@@ -225,25 +227,29 @@ void joc (){
     if (s2 > 9){
         s2 = s2 - 10;
     }
-    if (s1 == s2){
-        joc();
-    }
     settextstyle(9, 0, 1);
-    if (s1 == 9){
+    e = 0;
+    k = 0;
+    if (s1 == s2) {
+        outtextxy(3, 400, "Egalitate. Apasa tasta SPACE pentru a continua sau tasta ESCAPE pentru a iesi din joc");
+        egal++;
+        e++;
+    }
+    if (s1 == 9 && e == 0){
         sprintf (pariu, "AI CASTIGAT! :) Primesti  %d de lei", par * 3);
         outtextxy (3, 400, pariu);
         bal = bal + par * 3;
         k++;
         r++;
-        outtextxy(3, 430, "Apasa tasta SHIFT pentru a juca din nou sau tasta ESCAPE pentru a iesi din joc");
+        outtextxy(3, 430, "Apasa tasta SPACE pentru a juca din nou sau tasta ESCAPE pentru a iesi din joc");
     }
-    else if (s2 == 9 ){
+    if (s2 == 9 && e == 0){
         sprintf (pariu, "Ai pierdut :( Pierzi %d de lei", par);
         outtextxy (3, 400, pariu);
         bal = bal - par;
         pierdut = pierdut + par;
         k++;
-        outtextxy(3, 430, "Apasa tasta SHIFT pentru a juca din nou sau tasta ESCAPE pentru a iesi din joc");
+        outtextxy(3, 430, "Apasa tasta SPACE pentru a juca din nou sau tasta ESCAPE pentru a iesi din joc");
     }
     dif1 = 9 - s1;
     dif2 = 9 - s2;
@@ -251,7 +257,7 @@ void joc (){
         sprintf (pariu, "AI CASTIGAT! :) Primesti  %d de lei", par * 2);
         outtextxy (3, 400, pariu);
         bal = bal + par * 2;
-        outtextxy(3, 430, "Apasa tasta SHIFT pentru a juca din nou sau tasta ESCAPE pentru a iesi din joc");
+        outtextxy(3, 430, "Apasa tasta SPACE pentru a juca din nou sau tasta ESCAPE pentru a iesi din joc");
         r++;
     }
     else if (dif1 > dif2 && k == 0){
@@ -259,37 +265,36 @@ void joc (){
         outtextxy (3, 400, pariu);
         bal = bal - par;
         pierdut = pierdut + par;
-        outtextxy(3, 430, "Apasa tasta SHIFT pentru a juca din nou sau tasta ESCAPE pentru a iesi din joc");
+        outtextxy(3, 430, "Apasa tasta SPACE pentru a juca din nou sau tasta ESCAPE pentru a iesi din joc");
     }
+        j++;
 }
 
 int main()
 {
-    int j = 0;
     srand(time(NULL));
     carti = generare_carti();
     adimagine(carti);
     while (carti){
         joc();
-        j++;
         if (bal == 0){
             settextstyle(4, 0, 2);
             outtextxy (3, 430, "Ai pierdut toti banii la pariuri.........................................................");
             settextstyle(9, 0, 2);
             outtextxy (3, 460, "Apasa tasta SHIFT pentru a vedea statisticile jocului sau tasta ESCAPE pentru a iesi din joc");
             while (1){
-        if (GetAsyncKeyState(VK_LSHIFT))
-            stats(j);
-        if (GetAsyncKeyState(VK_ESCAPE))
+        if (GetKeyState(VK_LSHIFT) & 0x8000)
+            stats();
+        if (GetKeyState(VK_ESCAPE) & 0x8000)
             return 0;
         }
     }
         if (carti){
         while (1){
-        if (GetAsyncKeyState(VK_ESCAPE))
-            return 0;
-        if (GetAsyncKeyState(VK_LSHIFT))
+        if(GetKeyState(VK_SPACE) & 0x8000)
             break;
+        if(GetKeyState(VK_ESCAPE) & 0x8000)
+            return 0;
         }
     }
 }
@@ -298,9 +303,9 @@ int main()
     settextstyle(9, 0, 2);
     outtextxy (3, 460, "Apasa tasta SHIFT pentru a vedea statisticile jocului sau tasta ESCAPE pentru a iesi din joc");
     while (1){
-        if (GetAsyncKeyState(VK_LSHIFT))
-            stats(j);
-        if (GetAsyncKeyState(VK_ESCAPE))
+        if (GetKeyState(VK_LSHIFT) & 0x8000)
+            stats();
+        if (GetKeyState(VK_ESCAPE) & 0x8000)
             return 0;
         }
     return 0;
