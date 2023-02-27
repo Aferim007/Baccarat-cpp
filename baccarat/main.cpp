@@ -111,7 +111,7 @@ void joc (){
     outtextxy(650, 340, "-castiga cel care are valoarea cartilor cea mai apropiata de 9");
     outtextxy(700, 370, "Incasari:");
     outtextxy(650, 390, "-pentru valoarea cartilor egala cu 9 se incaseaza trilplul pariului");
-    outtextxy(650, 410, "-pentru orice al castig se incaseaza dublu");
+    outtextxy(650, 410, "-pentru orice alt castig se incaseaza dublu");
     settextstyle(6, 0, 2);
     sprintf (bani, "Balanta: %d de lei", bal);
     outtextxy (190, 600, bani);
